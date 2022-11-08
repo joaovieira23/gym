@@ -1,4 +1,4 @@
-import { VStack, Image, Text, Center, Heading } from 'native-base';
+import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
 
 import BackgroundImg from '@assets/background.png';
 
@@ -8,7 +8,11 @@ import { Button } from '@components/Button';
 
 export function SignIn() {
     return (
-        <VStack flex={1} bg="gray.700" px="10">
+        <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+        >
+        <VStack flex={1} bg="gray.700" px="10" pb={16}>
             <Image
                 source={BackgroundImg}
                 alt="Pessoas treinando"
@@ -42,8 +46,17 @@ export function SignIn() {
                 <Button title="Acessar" />
             </Center>
 
+            <Center mt={24}>
+                <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">
+                    Ainda não tem acesso?
+                </Text>
 
-            <Button title="Criar conta" variant="outline" />
+                <Button 
+                    title="Criar conta" 
+                    variant="outline" 
+                />
+            </Center>
         </VStack>
+        </ScrollView>
     );
 }
