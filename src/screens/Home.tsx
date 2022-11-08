@@ -7,6 +7,7 @@ import { useState } from 'react';
 export function Home() {
 
     const [groups, setGroups] = useState(['Costas', 'Biceps', 'Triceps', 'Ombro', 'Perna' ]);
+    const [exercises, setExercises] = useState(['Puxada Frontal', 'Remada curvada', 'Remada Unilateral', 'Levantamento terra' ]);
     const [groupSelected, setGroupSelected] = useState('costa');
 
     return (
@@ -37,13 +38,18 @@ export function Home() {
                     </Heading>
 
                     <Text color="gray.200" fontSize="sm">
-                        4
+                        {exercises.length}
                     </Text>
                 </HStack>
 
-                <ExerciseCard />
-                <ExerciseCard />
 
+                <FlatList
+                    data={exercises}
+                    keyExtractor={item => item}
+                    renderItem={({ item }) => (<ExerciseCard />)}
+                    showsVerticalScrollIndicator={false}
+                    _contentContainerStyle={{ paddingBottom: 20 }}
+                />
             </VStack>
         </VStack>
     )
