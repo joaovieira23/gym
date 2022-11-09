@@ -16,18 +16,30 @@ export function Profile() {
     const [userPhoto, setUserPhoto] = useState('https://github.com/joaovieira23.png')
 
     async function handleUserPhotoSelect() {
-        const photoSelected = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 1,
-            aspect: [4, 4],
-            allowsEditing: true
-        });
+        setPhotoIsLoading(true)
 
-        if (photoSelected.cancelled) {
-            return;
-        };
+        try {
+            const photoSelected = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+                aspect: [4, 4],
+                allowsEditing: true
+            });
+    
+            if (photoSelected.cancelled) {
+                return;
+            };
 
-        setUserPhoto(photoSelected.uri);
+            if (photoSelected.uri) {
+                setUserPhoto(photoSelected.uri);
+            };
+    
+
+        } catch (e) {
+            console.log('error', e)
+        } finally {
+            setPhotoIsLoading(false)
+        }
     }
 
     return (
