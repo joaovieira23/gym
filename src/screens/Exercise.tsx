@@ -1,4 +1,4 @@
-import { Heading, HStack, Icon, Text, VStack } from 'native-base';
+import { Heading, HStack, Icon, Text, VStack, Image } from 'native-base';
 import { TouchableOpacity } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
@@ -40,6 +40,19 @@ export function Exercise() {
                     </HStack>
                 </HStack>
             </VStack>   
+
+            <VStack p={8}>
+                <Image
+                    w="full"
+                    h={80}
+                    source={{ uri: 'https://i.ytimg.com/vi/JE3XUqMyHXo/mqdefault.jpg' }}
+                    alt="Nome do exercício"
+                    mb={3}
+                    resizeMode="cover"
+                    rounded="lg"
+                    // overflow="hidden"
+                />
+            </VStack>
         </VStack>
     )
 }
