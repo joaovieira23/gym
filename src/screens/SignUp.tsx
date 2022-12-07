@@ -2,6 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
+import axios from 'axios';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import LogoSvg from '@assets/logo.svg';
@@ -9,6 +11,8 @@ import BackgroundImg from '@assets/background.png';
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { api } from "@services/api";
+import { Alert } from "react-native";
 
 type FormDataProps = {
   name: string;
@@ -36,17 +40,17 @@ export function SignUp() {
     navigation.goBack();
   }
 
-  function handleSignUp({ name, email, password, password_confirm }: FormDataProps) {
-    fetch('172.18.0.1:3333/users', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+  async function handleSignUp({ name, email, password, password_confirm }: FormDataProps) {
+    try {
+      const response = await api.post('/users', {
         name, email, password
       })
-    })
+  
+      console.log(response.data);
+    } catch(error) {
+      if(axios.isAxiosError(error))
+      Alert.alert('Erro', error.response?.data.message);
+    }
   }
 
   return (
