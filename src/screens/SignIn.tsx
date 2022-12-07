@@ -11,6 +11,7 @@ import { Button } from '@components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@hooks/useAuth';
 import { AppError } from '@utils/AppError';
+import { useState } from 'react';
 
 type FormData = {
     email: string;
@@ -23,6 +24,8 @@ export function SignIn() {
 
     const { signIn } = useAuth();
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const toast = useToast();
 
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
@@ -33,6 +36,7 @@ export function SignIn() {
 
     async function handleSignIn({ email, password }: FormData) {
         try {
+            setIsLoading(true);
             await signIn(email, password);
         } catch(error) {
             const isAppError = error instanceof AppError;
@@ -44,6 +48,8 @@ export function SignIn() {
                 placement: 'top',
                 bgColor: 'red.500'
             });
+
+            setIsLoading(false);
         }
     };
 
@@ -106,6 +112,7 @@ export function SignIn() {
                 <Button 
                     onPress={handleSubmit(handleSignIn)}
                     title="Acessar" 
+                    isLoading={isLoading}
                 />
             </Center>
 
