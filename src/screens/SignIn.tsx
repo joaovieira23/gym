@@ -9,6 +9,7 @@ import LogoSvg from '@assets/logo.svg';
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '@hooks/useAuth';
 
 type FormData = {
     email: string;
@@ -19,6 +20,8 @@ export function SignIn() {
 
     const { navigate } = useNavigation<AuthNavigatorRoutesProps>();
 
+    const { signIn } = useAuth();
+
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
 
     function handleNewAccount() {
@@ -26,7 +29,7 @@ export function SignIn() {
     };
 
     function handleSignIn({ email, password }: FormData) {
-        console.log(email, password);
+        signIn(email, password);
     };
 
     return (
