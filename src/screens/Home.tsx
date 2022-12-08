@@ -1,24 +1,66 @@
+import { useState, useEffect, useCallback } from 'react';
 import { ExerciseCard } from '@components/ExerciseCard';
 import { Group } from '@components/Group';
 import { HomeHeader } from '@components/HomeHeader';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 
-import { FlatList, Heading, HStack, Text, VStack } from 'native-base';
-import { useState } from 'react';
+import { api } from '@services/api';
+import { AppError } from '@utils/AppError';
+import { FlatList, Heading, HStack, Text, useToast, VStack } from 'native-base';
 
 export function Home() {
 
-    const [groups, setGroups] = useState(['Costas', 'Biceps', 'Triceps', 'Ombro', 'Perna' ]);
-    const [exercises, setExercises] = useState(['Puxada Frontal', 'Remada curvada', 'Remada Unilateral', 'Levantamento terra' ]);
+    const [groups, setGroups] = useState<string[]>([]);
+    const [exercises, setExercises] = useState([]);
     const [groupSelected, setGroupSelected] = useState('Costas');
+    const toast = useToast();
 
     const { navigate } = useNavigation<AppNavigatorRoutesProps>();
 
     function handleOpenExerciseDetails() {
         navigate('exercise')
+    };
+
+    async function fetchGroups() {
+        try {
+            const response = await api.get('/groups');
+            setGroups(response.data);
+
+        } catch (error) {
+            const isAppError = error instanceof AppError;
+            const title = isAppError ? error.message : 'Não foi possível carregar os grupos musculares.';
+            toast.show({
+                title,
+                placement: 'top',
+                bgColor: 'red.500'
+            });
+        }
+    };
+
+    async function fetchExercisesByGroup() {
+        try {
+            const response = await api.get(`/exercises/bygroup/${groupSelected}`);
+            console.log(re)
+        } catch (error) {
+            const isAppError = error instanceof AppError;
+            const title = isAppError ? error.message : 'Não foi possível carregar os exercícios.';
+            toast.show({
+                title,
+                placement: 'top',
+                bgColor: 'red.500'
+            });
+        }
     }
+
+    useEffect(() => {
+        fetchGroups();
+    }, []);
+
+    useFocusEffect(useCallback(() => {
+        fetchExercisesByGroup();
+    }, [groupSelected]))
 
     return (
         <VStack flex={1}>
