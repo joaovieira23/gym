@@ -20,8 +20,10 @@ type RouteParamsProps = {
 
 export function Exercise() {
     const [isLoading, setIsLoading] = useState(true);
+    const [sendingRegister, setSendingRegister] = useState(false);
     const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
-    const { goBack } = useNavigation<AppNavigatorRoutesProps>();
+    const navigation = useNavigation<AppNavigatorRoutesProps>();
+
     const toast = useToast();
 
     const route = useRoute();
@@ -29,14 +31,43 @@ export function Exercise() {
     const { exerciseId } = route.params as RouteParamsProps;
 
     function handleGoBack() {
-        goBack();
+        navigation.goBack();
     };
+
+    async function handleExerciseHistoryRegister() {
+        try {
+            setSendingRegister(true);
+
+            const data = await api.post('/history', { exercise_id: exerciseId });
+
+            console.warn('data', data);
+
+            toast.show({
+                title: 'Parabéns! Exercício registrado no seu histórico!',
+                placement: 'top',
+                bgColor: 'green.700'
+            });
+        } catch (error) {
+            const isAppError = error instanceof AppError;
+            const title = isAppError ? error.message : 'Não foi possível registrar o exercício';
+            console.warn('error', error);
+
+            toast.show({
+                title,
+                placement: 'top',
+                bgColor: 'red.500'
+            });
+
+            navigation.navigate('history');
+        } finally {
+            setSendingRegister(false);
+        }
+    }
 
     async function fetchExerciseDetails() {
         try {
             setIsLoading(true);
             const response = await api.get(`/exercises/${exerciseId}`);
-            console.warn(response.data);
             setExercise(response.data);
         } catch (error) {
             const isAppError = error instanceof AppError;
@@ -112,7 +143,11 @@ export function Exercise() {
                         </HStack>
                     </HStack>
                     
-                    <Button title="Marcar como realizado" />
+                    <Button 
+                        isLoading={sendingRegister}
+                        title="Marcar como realizado"
+                        onPress={handleExerciseHistoryRegister}
+                    />
                 </Box>
             </VStack>
             }
