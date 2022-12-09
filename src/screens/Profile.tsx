@@ -2,14 +2,24 @@ import { Button } from '@components/Button';
 import { Input } from '@components/Input';
 import { ScreenHeader } from '@components/ScreenHeader';
 import { UserPhoto } from '@components/UserPhoto';
+import { Controller, useForm } from 'react-hook-form';
 import { Center, ScrollView, VStack, Skeleton, Text, Heading, useToast } from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
+import { useAuth } from '@hooks/useAuth';
 
 const PHOTO_SIZE = 33;
+
+type FormDataProps = {
+    name: string;
+    email: string;
+    password: string;
+    old_password: string;
+    confirm_password: string;
+};
 
 export function Profile() {
 
@@ -17,6 +27,13 @@ export function Profile() {
     const [userPhoto, setUserPhoto] = useState('https://github.com/joaovieira23.png');
 
     const toast = useToast();
+    const { user } = useAuth();
+    const { control } = useForm<FormDataProps>({
+        defaultValues: {
+            name: user.name,
+            email: user.email
+        }
+    });
 
     async function handleUserPhotoSelect() {
         setPhotoIsLoading(true)
@@ -81,16 +98,34 @@ export function Profile() {
                         </Text>
                     </TouchableOpacity>
 
-                    <Input
-                        placeholder='Nome'
-                        bg="gray.600"
+                    <Controller
+                        control={control}
+                        name="name"
+                        render={({ field: { value, onChange }}) => (
+                            <Input
+                                placeholder='Nome'
+                                bg="gray.600"
+                                onChangeText={onChange}
+                                value={value}
+                            />
+                        )}
                     />
 
-                    <Input
-                        bg="gray.600"
-                        value='joaovictorvieira.23@hotmail.com'
-                        isDisabled
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field: { value, onChange }}) => (
+                            <Input
+                                bg="gray.600"
+                                placeholder="E-mail"
+                                isDisabled
+                                onChangeText={onChange}
+                                value={value}
+                            />
+                        )}
                     />
+
+                    
 
                         <Heading color="gray.200" fontSize="md" mb={2} alignSelf="flex-start" mt={12} fontFamily="heading">
                             Alterar senha
