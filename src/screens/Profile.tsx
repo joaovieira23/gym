@@ -50,7 +50,7 @@ export function Profile() {
     const [userPhoto, setUserPhoto] = useState('https://github.com/joaovieira23.png');
 
     const toast = useToast();
-    const { user } = useAuth();
+    const { user, updateUserProfile } = useAuth();
     const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
         defaultValues: {
             name: user.name,
@@ -85,7 +85,15 @@ export function Profile() {
                     })
                 }
 
-                setUserPhoto(photoSelected.uri);
+                const fileExtension = photoSelected.uri.split('.').pop();
+
+                const photoFile = {
+                    name: `${user.name}.${fileExtension}`.toLowerCase(),
+                    uri: photoSelected.uri,
+                    type: `${photoSelected.type}/${fileExtension}`
+                };
+
+                console.log(photoFile);
             };
     
 
@@ -101,7 +109,13 @@ export function Profile() {
         try {
             setIsUpdating(true);
 
+            const userUpdated = user;
+            userUpdated.name;
+
             await api.put('/users', data);
+
+            await updateUserProfile(userUpdated);
+
             toast.show({
                 title: 'Perfil atualizado com sucesso!',
                 placement: 'top',
@@ -224,7 +238,7 @@ export function Profile() {
                         <Button
                             title="Atualizar"
                             onPress={handleSubmit(handleProfileUpdate)}
-                            loading={isUpdating}
+                            isLoading={isUpdating}
                             mt={4}
                         />
                     </Center>
