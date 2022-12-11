@@ -72,7 +72,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         try {
             setUser(userUpdated);
             await storageUserSave(userUpdated);
-
         } catch(error) {
             throw error;
         };

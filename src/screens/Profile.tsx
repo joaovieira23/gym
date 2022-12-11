@@ -5,12 +5,10 @@ import { UserPhoto } from '@components/UserPhoto';
 import { Controller, useForm } from 'react-hook-form';
 import { Center, ScrollView, VStack, Skeleton, Text, Heading, useToast } from 'native-base';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as yup from'yup';
 
-import defaultUserPhotoImg from '@assets/userPhotoDefault.png';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useAuth } from '@hooks/useAuth';
@@ -49,6 +47,7 @@ export function Profile() {
 
     const [photoIsLoading, setPhotoIsLoading] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [userPhoto, setUserPhoto] = useState('https://github.com/joaovieira23.png');
 
     const toast = useToast();
     const { user, updateUserProfile } = useAuth();
@@ -108,7 +107,7 @@ export function Profile() {
                 updateUserProfile(userUpdated);
 
                 toast.show({
-                    title: 'Foto atualizada!',
+                    title: 'Foto atualizada',
                     placement: 'top',
                     bgColor: 'green.500'
                 })
@@ -128,7 +127,9 @@ export function Profile() {
             setIsUpdating(true);
 
             const userUpdated = user;
-            userUpdated.name;
+            userUpdated.name = data.name;
+
+            console.warn('userUpdated.name', userUpdated.name);
 
             await api.put('/users', data);
 
@@ -168,7 +169,7 @@ export function Profile() {
                             endColor="gray.300"
                         /> :
                         <UserPhoto
-                            source={{ uri: defaultUserPhotoImg }}
+                            source={{ uri: userPhoto }}
                             alt="Foto do usuário"
                             size={PHOTO_SIZE}
                         />
