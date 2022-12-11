@@ -3,8 +3,6 @@ import axios, { AxiosInstance } from 'axios';
 import { AppError } from '@utils/AppError';
 import { storageAuthTokenGet, storageAuthTokenSave } from '@storage/storageAuthToken';
 
-type SignOut = () => void;
-
 type PromiseType = {
     resolve: (value?: unknown) => void;
     reject: (reason?: unknown) => void;
@@ -13,11 +11,17 @@ type PromiseType = {
 type processQueueParams = {
     error: Error | null;
     token: string | null;
-}
+};
+
+type RegisterInterceptTokenManagerProps = {
+    signOut: () => void;
+    refreshTokenUpdated: (newToken: string) => void;
+};
 
 type APIInstanceProps = AxiosInstance & {
-    registerInterceptTokenManager: (signOut: SignOut) => () => void; 
+    registerInterceptTokenManager: ({}: RegisterInterceptTokenManagerProps) => () => void; 
 };
+
 
 const api = axios.create({
     baseURL: 'http://172.18.0.1:3333',
@@ -38,7 +42,7 @@ const processQueue = ({ error, token = null }: processQueueParams): void => {
     failedQueue = [];
 };
 
-api.registerInterceptTokenManager = signOut => {
+api.registerInterceptTokenManager = ({ signOut, refreshTokenUpdated }) => {
     const interceptTokenManager = api.interceptors.response.use(response => response, async requestError => {
 
         if(requestError?.response?.status === 401) {
@@ -80,7 +84,9 @@ api.registerInterceptTokenManager = signOut => {
                         api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
                         originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
 
+                        refreshTokenUpdated(data.token);
                         processQueue({ error: null, token: data.token });
+
                         resolve(originalRequest)
                     } catch (error: any) {
                         processQueue({ error, token: null });
