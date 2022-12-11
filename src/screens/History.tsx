@@ -24,15 +24,11 @@ export function History() {
       setIsLoading(true);
       const response = await api.get('/history');
 
-      console.log('response', response);
-
       setExercises(response.data);
 
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError ? error.message : 'Não foi possível carregar os detalhes do exercício';
-
-      console.log('isAppError', isAppError);
 
       toast.show({
         title,
@@ -77,7 +73,10 @@ export function History() {
               </Text>
             </Center>
         )
+        
       }
+
+
     </VStack>
   );
 }
